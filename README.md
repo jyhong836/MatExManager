@@ -1,12 +1,16 @@
 # MatExManager
-A matlab experiment manager.
+This project aims to provide a simple way to select models (or specifically classifiers). 
+
+## Features
+
++ You can organize classifiers, preprocessors and parameter spaces.
++ You can easily ensemble them according to cases.
++ Lastly, you can create a experiment manager and run in one call.
 
 ## Usage
 
-1. Prepare your classifier implementation in [`ClassifierProvider`](#modelprovider).
-2. Prepare your preprocessor implementation in [`PreprocessorProvider`](#preprocessorprovider) which preprocesses raw data into expected format. For example, you can extract features from image data, compute kernel matrixes from vectors and etc.
-3. Prepare your parameter space in [`ModelParamProvider`](#modelparamprovider).
-4. Ensemble your models inside  [`ModelProvider`](#modelprovider). A typical `ModelProvider` must be implemented with two static methods.
+1. Prepare basic elements of your models (classifiers, preprocessors and parameter spaces) in [`ClassifierProvider`](#modelprovider), [`PreprocessorProvider`](#preprocessorprovider) and [`ModelParamProvider`](#modelparamprovider).
+4. Ensemble your models inside  [`ModelProvider`](#modelprovider).
 5. Run all methods provided in `ModelProvider` or see more in [demo](/demo.m):
 ```matlab
 EM = ExperimentManager ( datasetName, options ); % Init with data set and options.
