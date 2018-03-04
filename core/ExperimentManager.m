@@ -46,14 +46,14 @@ function EM = ExperimentManager ( datasetName, options )
 		] = process_options (options, ...
 		'forceRunMethods', {},        ...
 		'runAllMethods',   false,     ...
-		'jobname',         [],	      ... 
+		'jobname',         'default_job', ... 
 		'autoSave',        true,      ...
 		'loocvID',         0,         ...
 		'updateCache',     0);
 
-	if isempty(EM.jobname)
-		EM.jobname = experiment.getjob.name(datasetName, EM.d);
-	end
+% 	if isempty(EM.jobname)
+% 		EM.jobname = experiment.getjob.name(datasetName, EM.d);
+% 	end
 
 	EM.datasetName = datasetName;
 end
@@ -69,14 +69,14 @@ function setup (EM)
 
 	% Prepare subspace data
 	data.options.datasetName = EM.datasetName;
-	data.options.d           = EM.d;
-	data.options.maxM        = EM.maxM;
+% 	data.options.d           = EM.d;
+% 	data.options.maxM        = EM.maxM;
 	data.options.updateCache = EM.updateCache;
 	data.options.loocvID     = EM.loocvID;
-	EM.data = PreprocessorProvider.ssm_preprocessor(data);
+    EM.data = PreprocessorProvider.import_data(data);
 
 	%% /////// learn models ///////
-	EM.results = experiment.getjob.result(EM.jobname);
+% 	EM.results = experiment.getjob.result(EM.jobname);
 	if isempty(EM.forceRunMethods)
 		disp('No method is required. EXIT');
 		return;
@@ -129,13 +129,15 @@ function runWithMethod (EM, method, method_options)
 	disp(['---- FIN ' method '@' datestr(datetime('now')) ' ----']);
 end
 
-function outputResults (EM)
+function results = outputResults (EM)
 	%% //////// output ////////
 	% Display table results.
 	display_table_results(EM.results);
 
+	results = EM.results;
+
 	% //// AutoSave ////
-	EM.save2file (EM);
+	EM.save2file ();
 	if ~EM.autoSave
 		disp(' [SAVE] Results are NOT saved to any file.');
 	end
@@ -146,13 +148,15 @@ end % END of methods
 
 methods (Access = private)
 
-function save2file (EM)
+function save2file (EM, method)
 	% //// AutoSave ////
 	if EM.autoSave
-		EM.results.(method).date = datestr(datetime('now'));
+		if exist('method', 'var') && ~isempty(method)
+			EM.results.(method).date = datestr(datetime('now'));
+		end
         results = EM.results;
 		save(EM.save_file_name, 'results');
-		disp(['[SAVE] Auto save results to ' EM.save_file_name]);
+		disp(['[SAVE] Auto save results to ''' EM.save_file_name '''']);
 	end
 end
 

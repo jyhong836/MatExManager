@@ -133,11 +133,11 @@ function [train_X, train_Y, test_X, test_Y] = trte_part(MS, X, Y, Train, Test)
 		test_X  = X(Test);
 	else % kernel matrix
 		train_X.K     = X.K(Train, Train);
-        train_X.Ymean = X.Ymean(:,Train);
-        train_X.s     = X.s(:,Train);
+%         train_X.Ymean = X.Ymean(:,Train);
+%         train_X.s     = X.s(:,Train);
 		test_X.K      = X.K(Train, Test);
-        test_X.Ymean  = X.Ymean(:,Test);
-        test_X.s      = X.s(:,Test);
+%         test_X.Ymean  = X.Ymean(:,Test);
+%         test_X.s      = X.s(:,Test);
 	end
 	train_Y = Y(Train);
 	test_Y  = Y(Test);
