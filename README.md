@@ -10,7 +10,7 @@ This project aims to provide a simple way to select models (or specifically clas
 ## Usage
 
 1. Prepare basic elements of your models (classifiers, preprocessors and parameter spaces) in [`ClassifierProvider`](#modelprovider), [`PreprocessorProvider`](#preprocessorprovider) and [`ModelParamProvider`](#modelparamprovider).
-4. Ensemble your models inside  [`ModelProvider`](#modelprovider).
+4. Build your models inside  [`ModelProvider`](#modelprovider) by ensembling classifiers, preprocessors and parameter spaces.
 5. Run all methods provided in `ModelProvider` or see more in [demo](/demo.m):
 ```matlab
 EM = ExperimentManager ( datasetName, options ); % Init with data set and options.
@@ -89,15 +89,15 @@ Second, enclose the elements of models.
 function [preprocessor, classifier, modelParam] = getModelByName ( name, options )
 % A method provides real models by name.
 % INPUT:
-%   name - The name.
+%   name - The name of model.
 %   options - The option to be provided to `ModelParamProvider`, see `ModelParamProvider.m` for details.
 
     % Prepare
     switch name
         case 'svm_rbf'
-            modelParam   = ModelParamProvider.dg_gau(options); % A `ModelParam` object, see `ModelParamProvider` for details.
-            classifier   = @ClassifierProvider.svm; % A classifier handler.
-            preprocessor = @(data)PreprocessorProvider.kernel_preprocessor(data, 'rbf'); % A preprocessor, see `PreprocessorProvider` for example.
+            modelParam   = ModelParamProvider.dg_gau(options);
+            classifier   = @ClassifierProvider.svm;
+            preprocessor = @(data)PreprocessorProvider.kernel_preprocessor(data, 'rbf');
         otherwise
             error(['Unknown model name: ' name]);
     end
