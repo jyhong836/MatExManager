@@ -13,12 +13,12 @@ function [ W, test_err, train_err ] = svm (data)
 
 	trN = size(data.X.K, 1);
 	hit_num = train_err * trN;
-    InfoSystem.say (['  Train error: ' num2str(train_err) ...
-            ' (' num2str(hit_num) '/' num2str(trN) ')'], verbose, 1);
+    % InfoSystem.say (['  Train error: ' num2str(train_err) ...
+    %         ' (' num2str(hit_num) '/' num2str(trN) ')'], verbose, 1);
 	teN = size(data.test_X.K, 2);
 	hit_num = test_err * teN;
-    InfoSystem.say (['  Test  error: ' num2str(test_err) ...
-            ' (' num2str(hit_num) '/' num2str(teN) ')'], verbose, 1);
+    % InfoSystem.say (['  Test  error: ' num2str(test_err) ...
+    %         ' (' num2str(hit_num) '/' num2str(teN) ')'], verbose, 1);
 end
 
 end

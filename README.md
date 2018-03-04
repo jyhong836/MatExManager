@@ -18,6 +18,55 @@ results = EM.outputResults(); % Get formatted results.
 
 ## Classes
 
+### PreprocessorProvider
+
+This class provides sets of preprocessors for feature extraction, kernel computing and etc. An example computing kernel matrixes:
+```matlab
+function newdata = kernel_preprocessor (data, kernelType)
+% cell array of data vectors -> kernel matrix.
+
+	% Kernel function handler
+	switch lower(kernelType)
+		case 'rbf'
+			ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
+	end
+
+	% compute kernel
+	start_time = cputime();
+	fprintf(' Computing kernel...');
+	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
+		compute_kernel ( ker_fh, data );
+	disp([' cputime: ' num2str(cputime()-start_time)]);
+
+end
+```
+
+### ClassifierProvider
+
+An example of SVM:
+```matlab
+function [ W, test_err, train_err ] = svm (data)
+	options = [];
+	if isfield(data, 'options'); options = data.options; end;
+	% extract options
+	[C, verbose] = process_options (options, 'C', 1, 'verbose', 0);
+
+	[ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, struct('C', C) );
+end
+```
+
+### ModelParamProvider
+
+This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
+```matlab
+function [ modelParam ] = svm_rbf ( options )
+        % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
+	modelParam = ModelParam({'C', power(10, -4:5), ... 
+	                         'gam', power(10, 0:-1:-4)}); 
+end
+```
+
+
 ### ModelProvider
 
 This class implement two static methods inside: `getModelNames` and `getModelByName`. You can modify the file, [ModelProvider.m](/ModelProvider.m), to add your own models.
@@ -57,53 +106,4 @@ The three output should be formatted:
   - `W` is model, e.g. matrix of classifier coeficients.
   - `test_err`, `train_err`: test/train error rate on the test set.
 + `modelParam` (`ModelParam` object): See [`ModelProvider`](#modelprovider) for how to generate a model parameter space easily.
-
-### PreprocessorProvider
-
-This class provides sets of preprocessors for feature extraction, kernel computing and etc. An example computing kernel matrixes:
-```
-function newdata = kernel_preprocessor (data, kernelType)
-% cell array of data vectors -> kernel matrix.
-
-	% Kernel function handler
-	switch lower(kernelType)
-		case 'rbf'
-			ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
-	end
-
-	% compute kernel
-	start_time = cputime();
-	fprintf(' Computing kernel...');
-	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
-		compute_kernel ( ker_fh, data );
-	disp([' cputime: ' num2str(cputime()-start_time)]);
-
-end
-```
-
-### ClassifierProvider
-
-An example of SVM:
-```matlab
-function [ W, test_err, train_err ] = svm (data)
-	options = [];
-	if isfield(data, 'options'); options = data.options; end;
-	% extract options
-	[C, verbose] = process_options (options, 'C', 1, 'verbose', 0);
-
-	[ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, struct('C', C) );
-end
-```
-
-### ModelParamProvider
-
-This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
-```
-function [ modelParam ] = svm_rbf ( options )
-        % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
-	modelParam = ModelParam({'C', power(10, -4:5), ... 
-	                         'gam', power(10, 0:-1:-4)}); 
-end
-```
-
 
