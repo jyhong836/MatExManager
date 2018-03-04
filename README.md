@@ -83,20 +83,15 @@ end
 
 ### ClassifierProvider
 
-An example:
+An example of SVM:
 ```matlab
 function [ W, test_err, train_err ] = svm (data)
-
 	options = [];
 	if isfield(data, 'options'); options = data.options; end;
+	% extract options
 	[C, verbose] = process_options (options, 'C', 1, 'verbose', 0);
 
 	[ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, struct('C', C) );
-
-	trN = size(data.X.K, 1);
-	hit_num = train_err * trN;
-	teN = size(data.test_X.K, 2);
-	hit_num = test_err * teN;
 end
 ```
 
@@ -105,15 +100,9 @@ end
 This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
 ```
 function [ modelParam ] = svm_rbf ( options )
-	modelOptions  = struct('verbose', 1); % Model options.
-	selectLastOne = false; % select last parameter pack if there are more than one parameter packs yielding identical validation error rates.
-
-	Cs  = power(10, -4:5); % Define parameter range.
-	gam = power(10, 0:-1:-4);
-
-	modelParam = ModelParam({'C', Cs, 'gam', gam}, ... % parameter space
-                            modelOptions, selectLastOne, ... % optional settings.
-                            logical([0,1])); % Define which parameter will trigger preprocessing, i.e., calling `preprocessor`.
+        % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
+	modelParam = ModelParam({'C', power(10, -4:5), ... 
+	                         'gam', power(10, 0:-1:-4)}); 
 end
 ```
 
