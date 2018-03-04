@@ -1,10 +1,11 @@
 % @Author: Junyuan Hong
 % @Date:   2017-12-14
 % @Last Modified by:   Junyuan Hong
-% @Last Modified time: 2017-12-14
+% @Last Modified time: 2018-03-04
 
 init;
 
+% ////////// full demo with steps /////////
 allMethods = ModelProvider.getModelNames();
 method_options.param1 = 0;
 
@@ -26,3 +27,10 @@ for im = 1:length(allMethods)
 	% Gather result
 	results.(method) = modelSelector.getReport();
 end
+
+
+% //////////// demo with data set ////////
+EM = ExperimentManager ( datasetName, options );
+EM.setup();
+EM.runAll(); % Run all required methods.
+results = EM.outputResults();

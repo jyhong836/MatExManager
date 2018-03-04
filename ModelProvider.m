@@ -1,3 +1,4 @@
+% demo of `ModelProvider`
 classdef ModelProvider
 
 methods (Static)
