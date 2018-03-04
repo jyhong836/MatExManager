@@ -28,7 +28,6 @@ This class provides sets of preprocessors for feature extraction, kernel computi
 ```matlab
 function newdata = kernel_preprocessor (data, kernelType)
 % cell array of data vectors -> kernel matrix.
-
 	% Kernel function handler
 	switch lower(kernelType)
 		case 'rbf'
@@ -36,12 +35,8 @@ function newdata = kernel_preprocessor (data, kernelType)
 	end
 
 	% compute kernel
-	start_time = cputime();
-	fprintf(' Computing kernel...');
 	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
 		compute_kernel ( ker_fh, data );
-	disp([' cputime: ' num2str(cputime()-start_time)]);
-
 end
 ```
 
@@ -69,41 +64,36 @@ function [ modelParam ] = svm_rbf ( options )
 	                         'gam', power(10, 0:-1:-4)}); 
 end
 ```
+where we yield two parameter spaces named `C` and `gam`.
 
 
 ### ModelProvider
 
 This class implement two static methods inside: `getModelNames` and `getModelByName`. You can modify the file, [ModelProvider.m](/ModelProvider.m), to add your own models.
 
-First, add string names of your models.
+#### Example
+We want to provide a model who use SVM as classifier, process data into RBF-kernel matrix.
+
+Step 1: define the string name of the model as `svm_rbf`.
 ```matlab
 function modelNames = getModelNames ()
-% A method provides model names.
     modelNames =  {'svm_rbf', % SVM classifier with RBF kernel
     }; 
 end
 ```
 
-Second, enclose the elements of models.
+Step 2: provide the elements of the model.
 ```matlab
 function [preprocessor, classifier, modelParam] = getModelByName ( name, options )
-% A method provides real models by name.
-% INPUT:
-%   name - The name of model.
-%   options - The option to be provided to `ModelParamProvider`, see `ModelParamProvider.m` for details.
-
-    % Prepare
     switch name
         case 'svm_rbf'
-            modelParam   = ModelParamProvider.dg_gau(options);
+            modelParam   = ModelParamProvider.svm_rbf(options);
             classifier   = @ClassifierProvider.svm;
             preprocessor = @(data)PreprocessorProvider.kernel_preprocessor(data, 'rbf');
-        otherwise
-            error(['Unknown model name: ' name]);
     end
 end
 ```
-The three output should be formatted:
+The three outputs should be formatted as
 + `preprocessor` (function handler): `newdata = fun (data)` where struct `newdata` should contain three fields: `X`, `Y`, `test_X`, `test_Y` as training data&label, testing datta&label.
 + `classifier` (function handler): `[ W, test_err, train_err ] = fun (data)` where 
   - `data` is struct with fields like: `data.X.K, data.Y, data.test_X.K, data.test_Y, data.options`;
