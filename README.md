@@ -79,15 +79,15 @@ end
 
 ### ClassifierProvider
 
-An example of SVM:
+To make different classifier adapt to the experiment manager, you need to write a function to make the transformation. An example of SVM:
 ```matlab
 function [ W, test_err, train_err ] = svm (data)
-	options = [];
-	if isfield(data, 'options'); options = data.options; end;
-	% extract options
-	[C, verbose] = process_options (options, 'C', 1, 'verbose', 0);
-
-	[ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, struct('C', C) );
+    % process options
+    if isfield(data, 'options'); options = data.options; else; options = []; end;
+    [C] = process_options (options, 'C', 1);
+    % Call the real SVM
+    [ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, ...
+                                           struct('C', C) );
 end
 ```
 
