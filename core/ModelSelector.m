@@ -22,7 +22,7 @@ properties (GetAccess = public, SetAccess = private)
 end
 
 properties (Access = private)
-	data         = [];           % data
+	dataProvider  = [];           % data
 	preprocessor = @(data) data; % Function called before creating CV sets.
 	classifier   = @(data) data; % Classifier
 	modelParam   = [];           % See ModelParam.
@@ -33,8 +33,8 @@ end % END: properties
 
 methods
 
-function MS = ModelSelector (data, preprocessor, classifier, modelParam)
-	MS.data         = data;
+function MS = ModelSelector (dataProvider, preprocessor, classifier, modelParam)
+	MS.dataProvider = dataProvider;
 	MS.preprocessor = preprocessor;
 	MS.classifier   = classifier;
 	MS.modelParam   = modelParam;
@@ -89,8 +89,7 @@ methods (Access = private)
 
 function prepareData (MS, options, doCV)
 % Preprocess data and data options.
-	MS.data.options = options; % param/options for preprocessing.
-	MS.predata = MS.preprocessor(MS.data);
+	MS.predata = MS.preprocessor(MS.dataProvider, options);
 	if doCV
 		MS.cvdata  = MS.createCVData(MS.predata);
 	end
@@ -128,7 +127,7 @@ end
 function createCVSet (MS)
 % Create Train/Test indicators who are boolean arrays.
 	disp(['[' MS.CVMethod '] Creating ' num2str(MS.CVParam) ' validation sets.']);
-	MS.TestSet = crossvalind(MS.CVMethod, MS.data.Y, MS.CVParam);
+	MS.TestSet = crossvalind(MS.CVMethod, MS.dataProvider.Y, MS.CVParam);
 end
 
 function [train_X, train_Y, test_X, test_Y] = trte_part(MS, X, Y, Train, Test)

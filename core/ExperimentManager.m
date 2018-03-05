@@ -12,10 +12,6 @@ classdef ExperimentManager < handle
 % Author: Junyuan Hong, 2017-12-14, jyhong836@gmail.com
 
 properties (GetAccess = public, SetAccess = private)
-	datasetName
-	d
-	maxM
-	lambda
 	forceRunMethods
 	runAllMethods
 	jobname
@@ -23,8 +19,9 @@ properties (GetAccess = public, SetAccess = private)
 	loocvID
 	updateCache
 	results
-    data
+%     data
     modelProvider
+    dataProvider
 end % END of properties
 
 properties (Access = private)
@@ -34,7 +31,7 @@ end % END of properties
 
 methods
 
-function EM = ExperimentManager ( datasetName, options )
+function EM = ExperimentManager ( dataProvider, modelProvider, options )
 % Initialization
 	%% Process options
 	if ~exist('options', 'var'); options = []; end;
@@ -42,23 +39,18 @@ function EM = ExperimentManager ( datasetName, options )
 		EM.runAllMethods,   ...
 		EM.jobname,         ...
 		EM.autoSave,        ...
-		EM.loocvID,         ...
-		EM.updateCache,     ...
-		EM.modelProvider,   ...
 		] = process_options (options, ...
 		'forceRunMethods', {},        ...
 		'runAllMethods',   false,     ...
 		'jobname',         'default_job', ... 
-		'autoSave',        true,      ...
-		'loocvID',         0,         ...
-		'updateCache',     0,         ...
-		'modelProvider',   ModelProvider());
+		'autoSave',        true);
 
 % 	if isempty(EM.jobname)
 % 		EM.jobname = experiment.getjob.name(datasetName, EM.d);
 % 	end
 
-	EM.datasetName = datasetName;
+	EM.dataProvider  = dataProvider;
+	EM.modelProvider = modelProvider;
 end
 
 function setup (EM)
@@ -70,13 +62,8 @@ function setup (EM)
 
 	EM.save_file_name = fullfile(TEMP_DIR, EM.jobname);
 
-	% Prepare subspace data
-	data.options.datasetName = EM.datasetName;
-% 	data.options.d           = EM.d;
-% 	data.options.maxM        = EM.maxM;
-	data.options.updateCache = EM.updateCache;
-	data.options.loocvID     = EM.loocvID;
-    EM.data = PreprocessorProvider.import_data(data);
+	% import data
+    EM.dataProvider.load();
 
 	%% /////// learn models ///////
 % 	EM.results = experiment.getjob.result(EM.jobname);
@@ -96,7 +83,7 @@ end
 function runAll ( EM )
 % Run all required methods.
 	allMethods = EM.modelProvider.getModelNames();
-	method_options.maxM = EM.maxM;
+	method_options.maxM = 123; % EM.maxM; % TODO fix this.
     
 	for im = 1:length(allMethods)
 		method = allMethods{im};
@@ -113,7 +100,7 @@ function runWithMethod (EM, method, method_options)
 	[preprocessor, classifier, modelParam] = EM.modelProvider.getModelByName(method, method_options);
 
 	% Build model selector
-	modelSelector = ModelSelector (EM.data, preprocessor, classifier, modelParam);
+	modelSelector = ModelSelector (EM.dataProvider, preprocessor, classifier, modelParam);
 	modelSelector.verbose = 1;
 
 	% Select model

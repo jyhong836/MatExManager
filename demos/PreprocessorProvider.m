@@ -3,22 +3,10 @@ classdef PreprocessorProvider
 
 methods (Static)
 
-function data = import_data (data)
-% Import data from mat file which should include formatted fields.
-	dataname = data.options.datasetName;
-	global DATA_DIR
-	ds = load(fullfile(DATA_DIR, dataname));
-	data.X      = ds.training;
-	data.test_X = ds.testing;
-	data.Y      = ds.training_label;
-	data.test_Y = ds.testing_label;
-end
-
-function newdata = kernel_preprocessor (data, kernelType)
+function newdata = kernel_preprocessor (data, options, kernelType)
 % cell array of subspaces -> kernel matrix.
 
-	options = [];
-	if isfield(data, 'options'); options = data.options; end;
+	if ~exist('options', 'var'); options = []; end;
 	[gam] = process_options (options, 'gam', 1000);
 
 	% Kernel function handler

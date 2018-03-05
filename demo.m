@@ -33,7 +33,7 @@ init;
 datasetName = 'PreWine';
 options = [];
 % EM = ExperimentManager ( datasetName, options ); % Use default model provider
-EM = ExperimentManager ( 'modelProvider', DemoModelProvider() ); % Use customized model provider.
+EM = ExperimentManager ( DemoDataProvider(datasetName, options), DemoModelProvider() ); % Use customized model provider.
 EM.setup();
 EM.runAll(); % Run all required methods.
 results = EM.outputResults();

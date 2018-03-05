@@ -23,7 +23,7 @@ function [preprocessor, classifier, modelParam] = getModelByName ( MP, name, opt
 		case 'svm_rbf'
 			modelParam   = ModelParamProvider.svm_rbf(options);
 			classifier   = @ClassifierProvider.svm;
-			preprocessor = @(data)PreprocessorProvider.kernel_preprocessor(data, 'rbf');
+			preprocessor = @(data, options)PreprocessorProvider.kernel_preprocessor(data, options, 'rbf');
 		otherwise
 			error(['Unknown model name: ' name]);
 	end

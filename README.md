@@ -94,7 +94,7 @@ end
 This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
 ```matlab
 function [ modelParam ] = svm_rbf ( options )
-        % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
+    % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
 	modelParam = ModelParam({'C', power(10, -4:5), ... 
 	                         'gam', power(10, 0:-1:-4)}); 
 end

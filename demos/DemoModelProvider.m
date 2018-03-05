@@ -43,10 +43,10 @@ function [ W, test_err, train_err ] = svm (data)
 		                                   struct('C', C) );
 end
 
-function newdata = rbf_kernel_pre (data)
+function newdata = rbf_kernel_pre (data, options)
 % cell array of subspaces -> kernel matrix.
 	% process kernel options
-	if isfield(data, 'options'); options = data.options; else; options = []; end;
+	if ~exist('options', 'var'); options = []; end;
 	[gam] = process_options (options, 'gam', 1000);
 
 	% Kernel function handler
