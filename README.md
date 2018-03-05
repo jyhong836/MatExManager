@@ -101,3 +101,19 @@ end
 ```
 where we yield two parameter spaces named `C` and `gam`.
 
+### DataProvider
+
+To provide data. See [data provider demo](demos/DemoDataProvider.m).
+```
+function loaded = load_from_file (DP)
+% Load from file and return data in struct 'loaded'.
+% You can customize the function to adapt your file format.
+  ...
+end
+
+function [X, test_X, Y, test_Y] = process_data (DP, ds)
+% You can customize the function to adapt your data format.
+% For example, you can slice the data dimension.
+  ...
+end
+```

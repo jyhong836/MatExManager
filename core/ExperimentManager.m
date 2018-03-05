@@ -74,7 +74,7 @@ function setup (EM)
 	disp('Force run methods:');
 	disp(EM.forceRunMethods);
 	if EM.runAllMethods
-		disp(' All methods not run will be run.');
+		disp(' All methods not runed will be run.');
 	end
 
 	EM.fh_runFlag = @(method) any(strcmp(method, EM.forceRunMethods)) || (EM.runAllMethods && (isempty(EM.results) || ~isfield(EM.results, method)));

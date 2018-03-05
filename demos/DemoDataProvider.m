@@ -8,7 +8,17 @@ end
 
 methods (Access = protected)
 
+function loaded = load_from_file (DP)
+% Load from file and return data in struct 'loaded'.
+%	You can customize the function to adapt your file format.
+	dataname = DP.datasetName;
+	global DATA_DIR % TODO don't use global variable.
+	loaded = load(fullfile(DATA_DIR, dataname));
+end
+
 function [X, test_X, Y, test_Y] = process_data (DP, ds)
+% You can customize the function to adapt your data format.
+%	For example, you can slice the data dimension.
 	X      = ds.training;
 	test_X = ds.testing;
 	Y      = ds.training_label;
