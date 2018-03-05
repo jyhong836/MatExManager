@@ -24,6 +24,7 @@ properties (GetAccess = public, SetAccess = private)
 	updateCache
 	results
     data
+    modelProvider
 end % END of properties
 
 properties (Access = private)
@@ -43,13 +44,15 @@ function EM = ExperimentManager ( datasetName, options )
 		EM.autoSave,        ...
 		EM.loocvID,         ...
 		EM.updateCache,     ...
+		EM.modelProvider,   ...
 		] = process_options (options, ...
 		'forceRunMethods', {},        ...
 		'runAllMethods',   false,     ...
 		'jobname',         'default_job', ... 
 		'autoSave',        true,      ...
 		'loocvID',         0,         ...
-		'updateCache',     0);
+		'updateCache',     0,         ...
+		'modelProvider',   ModelProvider());
 
 % 	if isempty(EM.jobname)
 % 		EM.jobname = experiment.getjob.name(datasetName, EM.d);
@@ -92,7 +95,7 @@ end
 
 function runAll ( EM )
 % Run all required methods.
-	allMethods = ModelProvider.getModelNames();
+	allMethods = EM.modelProvider.getModelNames();
 	method_options.maxM = EM.maxM;
     
 	for im = 1:length(allMethods)
@@ -107,7 +110,7 @@ function runWithMethod (EM, method, method_options)
 % Run specific method
 	disp(['------- RUN ' method ' -------']);
 
-	[preprocessor, classifier, modelParam] = ModelProvider.getModelByName(method, method_options);
+	[preprocessor, classifier, modelParam] = EM.modelProvider.getModelByName(method, method_options);
 
 	% Build model selector
 	modelSelector = ModelSelector (EM.data, preprocessor, classifier, modelParam);

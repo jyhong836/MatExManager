@@ -1,14 +1,18 @@
 % demo of `ModelProvider`
 classdef ModelProvider
 
-methods (Static)
+methods
 
-function modelNames = getModelNames ()
+function MP = ModelProvider ()
+	InfoSystem.say('Using default model provider.')
+end
+
+function modelNames = getModelNames (MP)
 	modelNames =  {'svm_rbf', % SVM classifier with RBF kernel
 	}; 
 end
 
-function [preprocessor, classifier, modelParam] = getModelByName ( name, options )
+function [preprocessor, classifier, modelParam] = getModelByName ( MP, name, options )
 % A method provides real models by name.
 % INPUT:
 %   name - The name of model.
