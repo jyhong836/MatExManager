@@ -1,7 +1,7 @@
 % @Author: Junyuan Hong
 % @Date:   2017-12-14
 % @Last Modified by:   Junyuan Hong
-% @Last Modified time: 2018-03-04
+% @Last Modified time: 2018-03-05
 
 init;
 
@@ -32,7 +32,8 @@ init;
 % //////////// demo with data set ////////
 datasetName = 'PreWine';
 options = [];
-EM = ExperimentManager ( datasetName, options );
+% EM = ExperimentManager ( datasetName, options ); % Use default model provider
+EM = ExperimentManager ( 'modelProvider', DemoModelProvider() ); % Use customized model provider.
 EM.setup();
 EM.runAll(); % Run all required methods.
 results = EM.outputResults();
