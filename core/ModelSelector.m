@@ -41,6 +41,7 @@ function MS = ModelSelector (data, preprocessor, classifier, modelParam)
 end
 
 function selectModel (MS)
+% Select model by cross evaluating on parts of the data set.
 	MS.createCVSet();
 	while MS.modelParam.hasNext()
 		[param, reprocessData] = MS.modelParam.top();
@@ -55,6 +56,7 @@ function selectModel (MS)
 end
 
 function result = evaluateModel (MS)
+% Evaluate model on test set.
 	InfoSystem.say ('[BEST] Evaludate selected model.', MS.verbose, 1);
 	param = MS.modelParam.getBestParam();
 	MS.prepareData(param, false);
@@ -86,7 +88,7 @@ end % END: methods
 methods (Access = private)
 
 function prepareData (MS, options, doCV)
-% Preprae data
+% Preprocess data and data options.
 	MS.data.options = options; % param/options for preprocessing.
 	MS.predata = MS.preprocessor(MS.data);
 	if doCV
@@ -109,6 +111,7 @@ function [ test_err, train_err, W ] = evaluate (MS, data, param)
 end
 
 function cvdata = createCVData (MS, data)
+% Create cross-validation set with given data.
 	assert(~isempty(MS.TestSet), 'Test set is not set yet. Call createCVSet first.');
 	switch MS.CVMethod
 		case 'Kfold'
@@ -123,21 +126,19 @@ function cvdata = createCVData (MS, data)
 end
 
 function createCVSet (MS)
+% Create Train/Test indicators who are boolean arrays.
 	disp(['[' MS.CVMethod '] Creating ' num2str(MS.CVParam) ' validation sets.']);
 	MS.TestSet = crossvalind(MS.CVMethod, MS.data.Y, MS.CVParam);
 end
 
 function [train_X, train_Y, test_X, test_Y] = trte_part(MS, X, Y, Train, Test)
+% Slice the data set (X, Y) according to Train/Test who are boolean arrays.
 	if iscell(X) % cell array
 		train_X = X(Train);
 		test_X  = X(Test);
 	else % kernel matrix
 		train_X.K     = X.K(Train, Train);
-%         train_X.Ymean = X.Ymean(:,Train);
-%         train_X.s     = X.s(:,Train);
 		test_X.K      = X.K(Train, Test);
-%         test_X.Ymean  = X.Ymean(:,Test);
-%         test_X.s      = X.s(:,Test);
 	end
 	train_Y = Y(Train);
 	test_Y  = Y(Test);
