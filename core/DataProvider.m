@@ -9,7 +9,7 @@ properties (GetAccess = public, SetAccess = protected)
 	options
 end
 
-methods
+methods (Sealed)
 
 function DP = DataProvider (datasetName, options)
 	DP.datasetName = datasetName;

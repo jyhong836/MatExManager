@@ -22,6 +22,8 @@ results = EM.outputResults(); % Get formatted results.
 
 ## Classes
 
+![](MatExManager.png)
+
 ### ModelProvider
 
 This class implement two methods inside: `getModelNames` and `getModelByName`. You can modify the file, [ModelProvider.m](/ModelProvider.m), to add your own models.
@@ -104,7 +106,7 @@ where we yield two parameter spaces named `C` and `gam`.
 ### DataProvider
 
 To provide data. See [data provider demo](demos/DemoDataProvider.m).
-```
+```matlab
 function loaded = load_from_file (DP)
 % Load from file and return data in struct 'loaded'.
 % You can customize the function to adapt your file format.
