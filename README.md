@@ -46,7 +46,7 @@ function [preprocessor, classifier, modelParam] = getModelByName ( name, options
         case 'svm_rbf'
             modelParam   = ModelParamProvider.svm_rbf(options);
             classifier   = @ClassifierProvider.svm;
-            preprocessor = @(data)PreprocessorProvider.kernel_preprocessor(data, 'rbf');
+            preprocessor = @PreprocessorProvider.kernel_preprocessor;
     end
 end
 ```
@@ -63,19 +63,17 @@ The three outputs should be formatted as
 
 This class provides sets of preprocessors for feature extraction, kernel computing and etc. An example computing kernel matrixes:
 ```matlab
-function newdata = kernel_preprocessor (data, kernelType)
+function newdata = kernel_preprocessor (data)
 % cell array of data vectors -> kernel matrix.
 	% Kernel function handler
-	switch lower(kernelType)
-		case 'rbf'
-			ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
-	end
+	ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
 
 	% compute kernel
 	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
 		compute_kernel ( ker_fh, data );
 end
 ```
+It is noticable that you have to make the data `newdata.X` as a cell array or a struct containing a kernel matrix. This is because the experiment manager can only make cross-validation partition available for these two formats.
 
 ### ClassifierProvider
 
