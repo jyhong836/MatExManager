@@ -10,7 +10,7 @@ This project aims to provide a simple way to select models (or specifically clas
 ## Usage
 
 1. Prepare basic elements of your models (classifiers, preprocessors and parameter spaces) in [`ClassifierProvider`](#modelprovider), [`PreprocessorProvider`](#preprocessorprovider) and [`ModelParamProvider`](#modelparamprovider).
-4. Build your models inside  [`ModelProvider`](#modelprovider) by ensembling classifiers, preprocessors and parameter spaces.
+4. Build your models inside  [`ModelProvider`](#modelprovider) by ensembling classifiers, preprocessors and parameter spaces. Alternatively, there is a [minimal demo](demos/DemoModelProvider) to do this.
 5. Run all methods provided in `ModelProvider` or see more in [demo](/demo.m):
 ```matlab
 EM = ExperimentManager ( datasetName, options ); % Init with data set and options.

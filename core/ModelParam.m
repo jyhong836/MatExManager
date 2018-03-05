@@ -157,12 +157,12 @@ end
 function equal = compareParam (MP, idx1, idx2, mask)
 % Compare two parameter vector.
 %	Return true if equal.
-if ~exist('mask', 'var') || isempty(mask)
-	equal = all((MP.paramSpace(idx1, :) - MP.paramSpace(idx2, :))==0);
-else
-	assert(islogical(mask), 'Mask has to be logical array.');
-	equal = all((MP.paramSpace(idx1, mask) - MP.paramSpace(idx2, mask))==0);
-end
+	if ~exist('mask', 'var') || isempty(mask)
+		equal = all((MP.paramSpace(idx1, :) - MP.paramSpace(idx2, :))==0);
+	else
+		assert(islogical(mask), 'Mask has to be logical array.');
+		equal = all((MP.paramSpace(idx1, mask) - MP.paramSpace(idx2, mask))==0);
+	end
 
 end
 

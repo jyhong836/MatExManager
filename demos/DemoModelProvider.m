@@ -20,9 +20,10 @@ function [preprocessor, classifier, modelParam] = getModelByName ( MP, name, opt
 	% Prepare
 	switch name
 		case 'svm_rbf'
-			modelParam   = svm_rbf_param(options);
+			modelParam = ModelParam({'C', power(10, -4:5), ... % classifier param
+	                         'gam', power(10, 0:-1:-4)});      % kernel param
 			classifier   = @svm;
-			preprocessor = @(data)kernel_preprocessor(data, 'rbf');
+			preprocessor = @rbf_kernel_pre;
 		otherwise
 			error(['Unknown model name: ' name]);
 	end
@@ -34,7 +35,7 @@ end
 
 
 function [ W, test_err, train_err ] = svm (data)
-
+	% process classifier options.
 	options = [];
 	if isfield(data, 'options'); options = data.options; end;
 	[C, verbose] = process_options (options, 'C', 1, 'verbose', 0);
@@ -43,36 +44,17 @@ function [ W, test_err, train_err ] = svm (data)
 	
 end
 
-function newdata = kernel_preprocessor (data, kernelType)
+function newdata = rbf_kernel_pre (data)
 % cell array of subspaces -> kernel matrix.
-
+	% process kernel options
 	options = [];
 	if isfield(data, 'options'); options = data.options; end;
 	[gam] = process_options (options, 'gam', 1000);
 
 	% Kernel function handler
-	switch lower(kernelType)
-		case 'rbf'
-			ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
-	end
+	ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
 
 	% compute kernel
-	start_time = cputime();
-	fprintf(' Computing kernel...');
 	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
 		compute_kernel ( ker_fh, data );
-	disp([' cputime: ' num2str(cputime()-start_time)]);
-
-end
-
-function [ modelParam ] = svm_rbf_param ( options )
-	modelOptions  = struct('verbose', 1); % Model options.
-	selectLastOne = false; % select last parameter pack if there are more than one parameter packs yielding identical validation error rates.
-
-	Cs  = power(10, -4:5); % Define parameter range.
-	gam = power(10, 0:-1:-4);
-
-	modelParam = ModelParam({'C', Cs, 'gam', gam}, ... % parameter space. Format: {'name', range, 'name', range, ...}
-                            modelOptions, selectLastOne, ... % optional settings.
-                            logical([0,1])); % Define which parameter will trigger preprocessing, i.e., calling `preprocessor`.
 end
