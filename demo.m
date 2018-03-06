@@ -36,5 +36,5 @@ options = [];
 % EM = ExperimentManager ( datasetName, options ); % Use default model provider
 EM = ExperimentManager ( DemoDataProvider(options), DemoModelProvider() ); % Use customized model provider.
 EM.setupExperiments();
-EM.runAll(); % Run all required methods.
+EM.run(); % Run all required methods.
 results = EM.outputResults();

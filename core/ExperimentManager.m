@@ -12,15 +12,9 @@ classdef ExperimentManager < handle
 % Author: Junyuan Hong, 2017-12-14, jyhong836@gmail.com
 
 properties (GetAccess = public, SetAccess = private)
-	forceRunMethods
-	runAllMethods
 	jobname
 	autoSave
-	loocvID
-	updateCache
-	results
     verbose
-%     data
     modelProvider
     dataProvider
     experiments
@@ -37,15 +31,11 @@ function EM = ExperimentManager ( dataProvider, modelProvider, options )
 % Initialization
 	%% Process options
 	if ~exist('options', 'var'); options = []; end;
-	[	EM.forceRunMethods, ...
-		EM.runAllMethods,   ...
-		EM.jobname,         ...
+	[	EM.jobname,         ...
 		EM.autoSave,        ...
 		EM.verbose,         ...
 		EM.experiments,     ...
 		] = process_options (options, ...
-		'forceRunMethods', {},        ...
-		'runAllMethods',   false,     ...
 		'jobname',         'default_job', ... 
 		'autoSave',        true,          ...
 		'verbose',         1,             ...
@@ -64,7 +54,10 @@ function EM = ExperimentManager ( dataProvider, modelProvider, options )
 end
 
 function setupExperiments (EM, dataNames, modelNames)
-% Generate experiment instances
+% Generate experiment instances.
+%	dataNames, modelNames - Cell array to specifiy the data and models for experiments.
+%							If they are empty, then all available data and models will
+%							be runned.
 	runAllData    = ~exist('dataNames', 'var')  || isempty(dataNames);
 	runAllMethods = ~exist('modelNames', 'var') || isempty(modelNames);
 
@@ -91,7 +84,12 @@ function setupExperiments (EM, dataNames, modelNames)
 	end
 end
 
-function runAll (EM)
+function run (EM)
+% Run generated experiments
+	if isempty(EM.experiments)
+		disp('No experiment is generated yet.');
+		return;
+	end
 	for ii = length(EM.experiments)
 		ex = EM.experiments(ii);
 		if ~ex.runned
@@ -107,7 +105,7 @@ end
 
 
 function result = runWith (EM, experiment)
-% Run specific method and return result
+% Run specific experiment and return result
 	disp(['------- RUN ' experiment.str ' -------']);
 
 	[preprocessor, classifier, modelParam] = EM.modelProvider.getModelByName(experiment.modelName, experiment.modelOptions);
@@ -127,11 +125,11 @@ function result = runWith (EM, experiment)
 end
 
 function results = outputResults (EM)
-	%% //////// output ////////
+% Display and try to save results.
+
 	% Display table results.
 	display_table_results(EM.experiments);
-
-	results = EM.results;
+	results = EM.experiments;
 
 	% //// AutoSave ////
 	EM.save2file ();
@@ -146,12 +144,13 @@ end % END of methods
 methods (Access = private)
 
 function save2file (EM, method)
+% Save results to file, only when 'autoSave' is setted.
 	% //// AutoSave ////
 	if EM.autoSave
 		% if exist('method', 'var') && ~isempty(method)
 		% 	EM.results.(method).date = datestr(datetime('now'));
 		% end
-        experiments = EM.experiments;
+        experiments = EM.experiments; % TODO save fancier results.
 		save(EM.save_file_name, 'experiments');
 		disp(['[SAVE] Auto save results to ''' EM.save_file_name '''']);
 	end
