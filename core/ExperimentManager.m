@@ -19,9 +19,11 @@ properties (GetAccess = public, SetAccess = private)
 	loocvID
 	updateCache
 	results
+    verbose
 %     data
     modelProvider
     dataProvider
+    experiments
 end % END of properties
 
 properties (Access = private)
@@ -39,11 +41,15 @@ function EM = ExperimentManager ( dataProvider, modelProvider, options )
 		EM.runAllMethods,   ...
 		EM.jobname,         ...
 		EM.autoSave,        ...
+		EM.verbose,         ...
+		EM.experiments,     ...
 		] = process_options (options, ...
 		'forceRunMethods', {},        ...
 		'runAllMethods',   false,     ...
 		'jobname',         'default_job', ... 
-		'autoSave',        true);
+		'autoSave',        true,          ...
+		'verbose',         1,             ...
+		'experiments',     []);
 
 % 	if isempty(EM.jobname)
 % 		EM.jobname = experiment.getjob.name(datasetName, EM.d);
@@ -51,56 +57,63 @@ function EM = ExperimentManager ( dataProvider, modelProvider, options )
 
 	EM.dataProvider  = dataProvider;
 	EM.modelProvider = modelProvider;
-end
 
-function setup (EM)
-% Setup experiment:
-%	get data
-%	preprocess data
-	%% ////// process data //////
 	global TEMP_DIR
 
 	EM.save_file_name = fullfile(TEMP_DIR, EM.jobname);
-
-	% import data
-    EM.dataProvider.load();
-
-	%% /////// learn models ///////
-% 	EM.results = experiment.getjob.result(EM.jobname);
-	if isempty(EM.forceRunMethods)
-		disp('No method is required. EXIT');
-		return;
-	end
-	disp('Force run methods:');
-	disp(EM.forceRunMethods);
-	if EM.runAllMethods
-		disp(' All methods not runed will be run.');
-	end
-
-	EM.fh_runFlag = @(method) any(strcmp(method, EM.forceRunMethods)) || (EM.runAllMethods && (isempty(EM.results) || ~isfield(EM.results, method)));
 end
 
-function runAll ( EM )
-% Run all required methods.
-	allMethods = EM.modelProvider.getModelNames();
+function setupExperiments (EM, dataNames, modelNames)
+% Generate experiment instances
+	runAllData    = ~exist('dataNames', 'var')  || isempty(dataNames);
+	runAllMethods = ~exist('modelNames', 'var') || isempty(modelNames);
+
+	% runFlag = @(data, model) ;
+
+	% generate experiments
+	InfoSystem.say('Generating experiments...', EM.verbose, 1);
+
+	allMethods  = EM.modelProvider.names();
+	allDatasets = EM.dataProvider.names();
+
 	method_options.maxM = 123; % EM.maxM; % TODO fix this.
+	data_options.verbose = EM.verbose;
     
 	for im = 1:length(allMethods)
 		method = allMethods{im};
-		if EM.fh_runFlag(method)
-			EM.runWithMethod (method, method_options);
+		for id = 1:length(allDatasets)
+			data = allDatasets{id};
+			if (runAllData    || any(strcmp(data, dataNames)) ) ... 
+			&& (runAllMethods || any(strcmp(model, modelNames)))
+				EM.experiments = [EM.experiments, Experiment(data, method, data_options, method_options)];
+			end
 		end
 	end
 end
 
-function runWithMethod (EM, method, method_options)
-% Run specific method
-	disp(['------- RUN ' method ' -------']);
+function runAll (EM)
+	for ii = length(EM.experiments)
+		ex = EM.experiments(ii);
+		if ~ex.runned
+			ex.result = EM.runWith(ex);
+			
+			EM.save2file(); % TODO save to file
+			disp(['---- FIN ' ex.str '@' datestr(datetime('now')) ' ----']);
+		else
+			disp(['WARN: ' ex.str ' has been runned.']);
+		end
+	end
+end
 
-	[preprocessor, classifier, modelParam] = EM.modelProvider.getModelByName(method, method_options);
+
+function result = runWith (EM, experiment)
+% Run specific method and return result
+	disp(['------- RUN ' experiment.str ' -------']);
+
+	[preprocessor, classifier, modelParam] = EM.modelProvider.getModelByName(experiment.modelName, experiment.modelOptions);
 
 	% Build model selector
-	modelSelector = ModelSelector (EM.dataProvider, preprocessor, classifier, modelParam);
+	modelSelector = ModelSelector (EM.dataProvider.load(experiment.dataName, experiment.dataOptions), preprocessor, classifier, modelParam);
 	modelSelector.verbose = 1;
 
 	% Select model
@@ -109,14 +122,8 @@ function runWithMethod (EM, method, method_options)
 	% Evaludate model
 	modelSelector.evaluateModel();
 
-	% Gather result
-	EM.results.(method) = modelSelector.getReport();
-
-	% method_options = datasetName, d, maxM, 
-	% EM.results.(method) = experiment.method.(method) ( data, method_options );
-	
-	EM.save2file();
-	disp(['---- FIN ' method '@' datestr(datetime('now')) ' ----']);
+	% Get result
+	result = modelSelector.getReport();
 end
 
 function results = outputResults (EM)
@@ -141,11 +148,11 @@ methods (Access = private)
 function save2file (EM, method)
 	% //// AutoSave ////
 	if EM.autoSave
-		if exist('method', 'var') && ~isempty(method)
-			EM.results.(method).date = datestr(datetime('now'));
-		end
-        results = EM.results;
-		save(EM.save_file_name, 'results');
+		% if exist('method', 'var') && ~isempty(method)
+		% 	EM.results.(method).date = datestr(datetime('now'));
+		% end
+        experiments = EM.experiments;
+		save(EM.save_file_name, 'experiments');
 		disp(['[SAVE] Auto save results to ''' EM.save_file_name '''']);
 	end
 end
