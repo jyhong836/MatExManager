@@ -1,5 +1,8 @@
-% demo of `ModelProvider`
 classdef ModelProvider
+% Model provider.
+%	To provide models, subclass this and implement abstract methods.
+%
+% Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 properties
 	names

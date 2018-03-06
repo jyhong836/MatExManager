@@ -1,4 +1,7 @@
 classdef Experiment < handle
+% Experiment class.
+%
+% Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 properties
 	result

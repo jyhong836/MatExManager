@@ -9,7 +9,7 @@ classdef ExperimentManager < handle
 %	EM.runWithMethod(method, method_options); % Run single method.
 %	EM.outputResults();
 %	
-% Author: Junyuan Hong, 2017-12-14, jyhong836@gmail.com
+% Author: Junyuan Hong, 2018-03-03, jyhong836@gmail.com
 
 properties (GetAccess = public, SetAccess = private)
 	jobname

@@ -1,4 +1,7 @@
 classdef DemoModelProvider < ModelProvider
+% Demo for model provider
+%
+% Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 methods
 

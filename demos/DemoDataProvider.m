@@ -1,4 +1,7 @@
 classdef DemoDataProvider < DataProvider
+% Demo for data provider
+%
+% Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 methods
 function obj = DemoDataProvider (varargin)
