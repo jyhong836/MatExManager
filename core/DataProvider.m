@@ -53,21 +53,13 @@ end
 
 end % END: methods
 
-methods (Access = protected)
+methods (Abstract, Access = protected)
 
-function loaded = load_from_file (DP, name)
+loaded = load_from_file (DP, name)
 % Load from file and return data in struct 'loaded'.
-	global DATA_DIR % TODO don't use global variable.
-	loaded = load(fullfile(DATA_DIR, name));
-end
 
-function [X, test_X, Y, test_Y] = process_data (DP, loaded, options)
+[X, test_X, Y, test_Y] = process_data (DP, loaded, options)
 % 	loaded - Loaded data struct.
-	X      = loaded.training;
-	test_X = loaded.testing;
-	Y      = loaded.training_label;
-	test_Y = loaded.testing_label;
-end
 
 end % END: methods
 
