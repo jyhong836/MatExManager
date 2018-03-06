@@ -22,8 +22,8 @@ function DP = DataProvider (options)
 end
 
 function data = load (DP, name, options)
-% Load data from mat files.
-	data = DP.findLoaded(name, options); % TODO check if loaded
+% Load data from mat files if has not been loaded.
+	data = DP.findLoaded(name, options);
 	if isempty(data)
 		disp(['Load data ''' name ''' from file.']);
 		if ~exist('options', 'var'); options = []; end;
@@ -32,7 +32,7 @@ function data = load (DP, name, options)
 		data.name = name;
 		data.options = options;
 
-		loadedData = [loadedData; data];
+		DP.loadedData = [DP.loadedData; data];
 	end
 end
 
@@ -57,7 +57,6 @@ methods (Access = protected)
 
 function loaded = load_from_file (DP, name)
 % Load from file and return data in struct 'loaded'.
-% 	dataname = DP.datasetName;
 	global DATA_DIR % TODO don't use global variable.
 	loaded = load(fullfile(DATA_DIR, name));
 end
