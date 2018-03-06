@@ -60,49 +60,6 @@ The three outputs should be formatted as
   - `test_err`, `train_err`: test/train error rate on the test set.
 + `modelParam` (`ModelParam` object): See [`ModelProvider`](#modelprovider) for how to generate a model parameter space easily.
 
-
-### PreprocessorProvider
-
-This class provides sets of preprocessors for feature extraction, kernel computing and etc. An example computing kernel matrixes:
-```matlab
-function newdata = kernel_preprocessor (data)
-% cell array of data vectors -> kernel matrix.
-	% Kernel function handler
-	ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
-
-	% compute kernel
-	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
-		compute_kernel ( ker_fh, data );
-end
-```
-It is noticable that you have to make the data `newdata.X` as a cell array or a struct containing a kernel matrix. This is because the experiment manager can only make cross-validation partition available for these two formats.
-
-### ClassifierProvider
-
-To make different classifier adapt to the experiment manager, you need to write a function to make the transformation. An example of SVM:
-```matlab
-function [ W, test_err, train_err ] = svm (data)
-    % process options
-    if isfield(data, 'options'); options = data.options; else; options = []; end;
-    [C] = process_options (options, 'C', 1);
-    % Call the real SVM
-    [ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, ...
-                                           struct('C', C) );
-end
-```
-
-### ModelParamProvider
-
-This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
-```matlab
-function [ modelParam ] = svm_rbf ( options )
-    % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
-	modelParam = ModelParam({'C', power(10, -4:5), ... 
-	                         'gam', power(10, 0:-1:-4)}); 
-end
-```
-where we yield two parameter spaces named `C` and `gam`.
-
 ### DataProvider
 
 To provide data. See [data provider demo](demos/DemoDataProvider.m).
@@ -119,3 +76,46 @@ function [X, test_X, Y, test_Y] = process_data (DP, ds)
   ...
 end
 ```
+
+### Preprocessor
+
+This class provides sets of preprocessors for feature extraction, kernel computing and etc. An example computing kernel matrixes:
+```matlab
+function newdata = kernel_preprocessor (data)
+% cell array of data vectors -> kernel matrix.
+	% Kernel function handler
+	ker_fh = @(x1, x2) exp(-gam* sum((x1 - x2).^2));
+
+	% compute kernel
+	[ newdata.X, newdata.test_X, newdata.Y, newdata.test_Y ] = ...
+		compute_kernel ( ker_fh, data );
+end
+```
+It is noticable that you have to make the data `newdata.X` as a cell array or a struct containing a kernel matrix. This is because the experiment manager can only make cross-validation partition available for these two formats.
+
+### Classifier
+
+To make different classifier adapt to the experiment manager, you need to write a function to make the transformation. An example of SVM:
+```matlab
+function [ W, test_err, train_err ] = svm (data)
+    % process options
+    if isfield(data, 'options'); options = data.options; else; options = []; end;
+    [C] = process_options (options, 'C', 1);
+    % Call the real SVM
+    [ test_err, train_err, W ] = svm_none ( data.X.K, data.Y, data.test_X.K, data.test_Y, ...
+                                           struct('C', C) );
+end
+```
+
+### ModelParam
+
+This class provide static methods to return `ModelParam` objects which enclose the whole parameter space for model selection. A simple demo:
+```matlab
+function [ modelParam ] = svm_rbf ( options )
+    % Create a ModelParam with parameter space. Format: {'name', range, 'name', range, ...}
+	modelParam = ModelParam({'C', power(10, -4:5), ... 
+	                         'gam', power(10, 0:-1:-4)}); 
+end
+```
+where we yield two parameter spaces named `C` and `gam`.
+
