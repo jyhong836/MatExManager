@@ -1,13 +1,11 @@
 classdef DataProvider < handle
 
 properties (GetAccess = public, SetAccess = protected)
-	% datasetName
-	X      % train data
-	test_X % test data
-	Y      % train label
-	test_Y % test label
-	options
     names
+end
+
+properties (Access = protected)
+	loadedData
 end
 
 methods 
@@ -25,12 +23,32 @@ end
 
 function data = load (DP, name, options)
 % Load data from mat files.
-	hasLoaded = false; % TODO check if loaded
-	if ~hasLoaded
+	data = DP.findLoaded(name, options); % TODO check if loaded
+	if isempty(data)
+		disp(['Load data ''' name ''' from file.']);
 		if ~exist('options', 'var'); options = []; end;
 		loaded = DP.load_from_file(name);
 		[data.X, data.test_X, data.Y, data.test_Y] = DP.process_data(loaded, options);
+		data.name = name;
+		data.options = options;
+
+		loadedData = [loadedData; data];
 	end
+end
+
+function data = findLoaded (DP, name, options)
+	data = [];
+	for ii = 1:length(DP.loadedData)
+		data = DP.loadedData(ii);
+		if DP.isEqualData(name, options, data.name, data.options)
+			disp('Found loaded data.');
+			return;
+		end
+	end
+end
+
+function flag = isEqualData (DP, name1, options1, name2, options2)
+	flag = strcmp(name1, name2) && isequaln(options1, options2);
 end
 
 end % END: methods
