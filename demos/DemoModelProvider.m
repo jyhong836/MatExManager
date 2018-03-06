@@ -24,8 +24,8 @@ function [preprocessor, classifier, modelParam] = getModelByName ( MP, name, opt
 	% Prepare
 	switch name
 		case 'svm_rbf'
-			modelParam = ModelParam({'C',   power(10, -4:5), ...  % classifier param
-	                                 'gam', power(10, 0:-1:-4)}); % kernel param
+			modelParam = ModelParam({'C',   power(10, 0:4), ...  % classifier param
+	                                 'gam', power(10, 0:-2:-4)}); % kernel param
 			classifier   = @svm;
 			preprocessor = @rbf_kernel_pre;
 		otherwise

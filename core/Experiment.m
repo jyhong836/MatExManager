@@ -2,8 +2,6 @@ classdef Experiment < handle
 
 properties
 	result
-    runned
-    str
 end
 
 properties (GetAccess=public, SetAccess=private)
@@ -11,6 +9,9 @@ properties (GetAccess=public, SetAccess=private)
 	modelName
 	dataOptions
 	modelOptions
+    runned
+    str
+    resultStr
 end
 
 methods

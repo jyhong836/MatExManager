@@ -79,10 +79,10 @@ function setupExperiments (EM, dataNames, modelNames)
 	method_options.maxM = 123; % EM.maxM; % TODO fix this.
 	data_options.verbose = EM.verbose;
     
-	for im = 1:length(allMethods)
-		method = allMethods{im};
-		for id = 1:length(allDatasets)
-			data = allDatasets{id};
+	for id = 1:length(allDatasets)
+		data = allDatasets{id};
+		for im = 1:length(allMethods)
+			method = allMethods{im};
 			if (runAllData    || any(strcmp(data, dataNames)) ) ... 
 			&& (runAllMethods || any(strcmp(model, modelNames)))
 				EM.experiments = [EM.experiments, Experiment(data, method, data_options, method_options)];
@@ -129,7 +129,7 @@ end
 function results = outputResults (EM)
 	%% //////// output ////////
 	% Display table results.
-	display_table_results(EM.results);
+	display_table_results(EM.experiments);
 
 	results = EM.results;
 
@@ -161,18 +161,35 @@ end % END of methods (Access = private)
 
 end
 
-
 % //////// functions /////////
-function display_table_results(results)
+function display_table_results(experiments)
 % display_table_results: Display the table of all results
-	if isempty(results); return; end
-	fldnames = fieldnames(results)';
+	dataList = {};
+	for ii=1:length(experiments)
+		ex = experiments(ii);
+		if ~any(strcmp(ex.dataName, dataList))
+			dataList = [dataList, ex.dataName];
+			display_table_for_data(experiments, ex.dataName);
+		end
+	end
+end
+
+function display_table_for_data(experiments, dataName)
+% display_table_results: Display the table of all results
+	if isempty(experiments); return; end;
+	disp(['---- data: ' dataName ' ----']);
+% 	fldnames = fieldnames(results)';
 	Test_error = [];
 	Train_error = [];
-	for ii=1:length(fldnames)
+	for ii=1:length(experiments)
+		ex = experiments(ii);
+		if ~strcmp(ex.dataName, dataName)
+			continue;
+		end
+		fldnames{ii} = ex.modelName;
 		fn = fldnames{ii};
-		Test_error  = [ Test_error; results.(fn).test_err];
-		Train_error = [Train_error; results.(fn).train_err];
+		Test_error  = [ Test_error; ex.result.test_err];
+		Train_error = [Train_error; ex.result.train_err];
 	end
 	table_res = table(Test_error, Train_error, ...
 		'RowNames', fldnames);
