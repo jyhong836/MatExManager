@@ -8,6 +8,10 @@ end
 
 methods (Access = protected)
 
+function names = getNames (obj)
+	names = {'PreWine'};
+end
+
 function loaded = load_from_file (DP, dataname)
 % Load from file and return data in struct 'loaded'.
 %	You can customize the function to adapt your file format.

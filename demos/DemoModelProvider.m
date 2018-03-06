@@ -1,17 +1,13 @@
-classdef DemoModelProvider
-
-properties
-	names
-end
+classdef DemoModelProvider < ModelProvider
 
 methods
 
-function MP = ModelProvider ()
+function MP = DemoModelProvider ()
 	InfoSystem.say('Customized model provider.')
 end
 
-function modelNames = get.names (MP)
-	modelNames =  {'svm_rbf', % SVM classifier with RBF kernel
+function names = getNames (MP)
+	names =  {'svm_rbf', % SVM classifier with RBF kernel
 	}; 
 end
 

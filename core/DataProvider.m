@@ -4,14 +4,14 @@ properties (GetAccess = public, SetAccess = protected)
     names
 end
 
-properties (Access = protected)
-	loadedData
-end
-
 methods 
 	function dataNames = get.names (obj)
-		dataNames = {'PreWine'};
+		dataNames = obj.getNames();
 	end
+end
+
+properties (Access = protected)
+	loadedData
 end
 
 methods %(Sealed)
@@ -54,6 +54,8 @@ end
 end % END: methods
 
 methods (Abstract, Access = protected)
+
+names = getNames (obj)
 
 loaded = load_from_file (DP, name)
 % Load from file and return data in struct 'loaded'.

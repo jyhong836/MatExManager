@@ -12,26 +12,20 @@ function MP = ModelProvider ()
 end
 
 function modelNames = get.names (MP)
-	modelNames =  {'svm_rbf', % SVM classifier with RBF kernel
-	}; 
+	modelNames = MP.getNames;
 end
 
-function [preprocessor, classifier, modelParam] = getModelByName ( MP, name, options )
+end
+
+methods (Abstract)
+
+names = getNames (MP)
+
+[preprocessor, classifier, modelParam] = getModelByName ( MP, name, options )
 % A method provides real models by name.
 % INPUT:
 %   name - The name of model.
 %   options - The option to be provided to `ModelParamProvider`, see `ModelParamProvider.m` for details.
-
-	% Prepare
-	switch name
-		case 'svm_rbf'
-			modelParam   = ModelParamProvider.svm_rbf(options);
-			classifier   = @ClassifierProvider.svm;
-			preprocessor = @(data, options)PreprocessorProvider.kernel_preprocessor(data, options, 'rbf');
-		otherwise
-			error(['Unknown model name: ' name]);
-	end
-end
 
 end
 
