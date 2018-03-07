@@ -15,7 +15,7 @@ methods
 end
 
 properties (Access = protected)
-	loadedData
+	loadedData % Array of loaded data.
 end
 
 methods %(Sealed)
@@ -27,8 +27,8 @@ end
 
 function data = load (DP, name, options)
 % Load data from mat files if has not been loaded.
-	data = DP.findLoaded(name, options);
-	if isempty(data)
+	data = DP.searchLoadedData(name, options);
+	if isempty(data) % not found data
 		disp(['Load data ''' name ''' from file.']);
 		if ~exist('options', 'var'); options = []; end;
 		loaded = DP.load_from_file(name);
@@ -40,7 +40,8 @@ function data = load (DP, name, options)
 	end
 end
 
-function data = findLoaded (DP, name, options)
+function data = searchLoadedData (DP, name, options)
+% Search loaded data
 	data = [];
 	for ii = 1:length(DP.loadedData)
 		data = DP.loadedData(ii);
@@ -52,6 +53,8 @@ function data = findLoaded (DP, name, options)
 end
 
 function flag = isEqualData (DP, name1, options1, name2, options2)
+% Check if two data is the same. 
+%	Only when name and options are the same, data will be identified as the same.
 	flag = strcmp(name1, name2) && isequaln(options1, options2);
 end
 

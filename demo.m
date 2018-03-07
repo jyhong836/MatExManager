@@ -1,9 +1,10 @@
 % @Author: Junyuan Hong
 % @Date:   2017-12-14
 % @Last Modified by:   Junyuan Hong
-% @Last Modified time: 2018-03-06
+% @Last Modified time: 2018-03-07
 
 init;
+addpath(genpath('./demos'));
 
 % % ////////// full demo with steps /////////
 % allMethods = ModelProvider.getModelNames();

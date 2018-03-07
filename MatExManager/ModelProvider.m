@@ -1,4 +1,4 @@
-classdef ModelProvider
+classdef ModelProvider < handle
 % Model provider.
 %	To provide models, subclass this and implement abstract methods.
 %
