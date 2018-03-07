@@ -8,27 +8,27 @@ properties
 	names
 end
 
+% /////////// Abstract methods to be implemented. /////////
+methods (Abstract)
+
+	names = getNames (MP)
+
+	[preprocessor, classifier, modelParam] = getModelByName ( MP, name, options )
+	% A method provides real models by name.
+	% INPUT:
+	%   name - The name of model.
+	%   options - The option to be provided to `ModelParamProvider`, see `ModelParamProvider.m` for details.
+
+end
+
 methods
 
 function MP = ModelProvider ()
-	InfoSystem.say('Using default model provider.')
 end
 
 function modelNames = get.names (MP)
-	modelNames = MP.getNames;
+	modelNames = MP.getNames();
 end
-
-end
-
-methods (Abstract)
-
-names = getNames (MP)
-
-[preprocessor, classifier, modelParam] = getModelByName ( MP, name, options )
-% A method provides real models by name.
-% INPUT:
-%   name - The name of model.
-%   options - The option to be provided to `ModelParamProvider`, see `ModelParamProvider.m` for details.
 
 end
 

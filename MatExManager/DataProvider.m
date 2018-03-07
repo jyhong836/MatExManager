@@ -18,6 +18,19 @@ properties (Access = protected)
 	loadedData % Array of loaded data.
 end
 
+% /////////// Abstract methods to be implemented. /////////
+methods (Abstract, Access = protected)
+
+	names = getNames (obj)
+
+	loaded = load_from_file (DP, name)
+	% Load from file and return data in struct 'loaded'.
+
+	[X, test_X, Y, test_Y] = process_data (DP, loaded, options)
+	% 	loaded - Loaded data struct.
+
+end % END: methods
+
 methods %(Sealed)
 
 function DP = DataProvider (options)
@@ -57,18 +70,6 @@ function flag = isEqualData (DP, name1, options1, name2, options2)
 %	Only when name and options are the same, data will be identified as the same.
 	flag = strcmp(name1, name2) && isequaln(options1, options2);
 end
-
-end % END: methods
-
-methods (Abstract, Access = protected)
-
-names = getNames (obj)
-
-loaded = load_from_file (DP, name)
-% Load from file and return data in struct 'loaded'.
-
-[X, test_X, Y, test_Y] = process_data (DP, loaded, options)
-% 	loaded - Loaded data struct.
 
 end % END: methods
 

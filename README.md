@@ -11,7 +11,8 @@ This project aims to provide a simple way to select models (or specifically clas
 
 1. Add path of `MatExManager`.
 2. Prepare basic elements of your models (classifiers, preprocessors and parameter spaces) in [`ClassifierProvider`](#modelprovider), [`PreprocessorProvider`](#preprocessorprovider) and [`ModelParamProvider`](#modelparamprovider).
-4. Build your models inside  [`ModelProvider`](#modelprovider) by ensembling classifiers, preprocessors and parameter spaces. Alternatively, there is a [minimal demo](demos/DemoModelProvider.m) to do this.
+4. Create your [`ModelProvider`](#modelprovider) where you can ensemble classifiers, preprocessors and parameter spaces. Alternatively, there is a [minimal demo](demos/DemoModelProvider.m) to do this.
+5. Provide your data inside 
 5. Run all methods provided in `ModelProvider` or see more in [demo](/demo.m):
 ```matlab
 EM = ExperimentManager ( datasetName, options ); % Init with data set and options.
@@ -27,7 +28,7 @@ results = EM.outputResults(); % Get formatted results.
 
 ### ModelProvider
 
-This class implement two methods inside: `getModelNames` and `getModelByName`. You can modify the file, [ModelProvider.m](/ModelProvider.m), to add your own models.
+This class implement two methods inside: `getNames` and `getModelByName`. Practically, you need to create a subclass of `ModelProvider` and implement all abstract methods. You can modify the file, [ModelProvider.m](/ModelProvider.m), to add your own models.
 
 #### Example
 We want to provide a model who uses SVM as classifier, process data into RBF-kernel matrix.
@@ -36,8 +37,8 @@ Easily, you can see the simple demo in [DemoModelProvider](/demos/DemoModelProvi
 
 Step 1: define the string name of the model as `svm_rbf`.
 ```matlab
-function modelNames = getModelNames ()
-    modelNames =  {'svm_rbf', % SVM classifier with RBF kernel
+function names = getNames ()
+    names =  {'svm_rbf', % SVM classifier with RBF kernel
     }; 
 end
 ```
@@ -56,14 +57,14 @@ end
 The three outputs should be formatted as
 + `preprocessor` (function handler): `newdata = fun (data)` where struct `newdata` should contain three fields: `X`, `Y`, `test_X`, `test_Y` as training data&label, testing datta&label.
 + `classifier` (function handler): `[ W, test_err, train_err ] = fun (data)` where 
-  - `data` is struct with fields like: `data.X.K, data.Y, data.test_X.K, data.test_Y, data.options`;
+  - `data` is a struct with fields like: `data.X.K, data.Y, data.test_X.K, data.test_Y, data.options`;
   - `W` is model, e.g. matrix of classifier coeficients.
   - `test_err`, `train_err`: test/train error rate on the test set.
 + `modelParam` (`ModelParam` object): See [`ModelProvider`](#modelprovider) for how to generate a model parameter space easily.
 
 ### DataProvider
 
-To provide data. See [data provider demo](demos/DemoDataProvider.m).
+A class to provide data. You need to create a subclass of `DataProvider` and implement all abstract methods. See [data provider demo](demos/DemoDataProvider.m).
 ```matlab
 function loaded = load_from_file (DP)
 % Load from file and return data in struct 'loaded'.
