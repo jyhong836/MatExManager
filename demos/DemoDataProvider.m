@@ -4,8 +4,8 @@ classdef DemoDataProvider < DataProvider
 % Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 methods
-function obj = DemoDataProvider (varargin)
-	obj@DataProvider(varargin{:});
+function obj = DemoDataProvider (options)
+	% obj@DataProvider(varargin{:});
 end
 end
 
@@ -19,7 +19,7 @@ function loaded = load_from_file (DP, dataname)
 % Load from file and return data in struct 'loaded'.
 %	You can customize the function to adapt your file format.
 	% dataname = DP.datasetName;
-	global DATA_DIR % TODO don't use global variable.
+	global DATA_DIR % TODO: don't use global variable.
 	loaded = load(fullfile(DATA_DIR, dataname));
 end
 

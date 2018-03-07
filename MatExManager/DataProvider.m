@@ -5,7 +5,8 @@ classdef DataProvider < handle
 % Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 properties (GetAccess = public, SetAccess = protected)
-    names
+    names   % all data names
+    % doCache % Cache data to speed up data processing.
 end
 
 methods 
@@ -14,7 +15,7 @@ methods
 	end
 end
 
-properties (Access = protected)
+properties (Access = private)
 	loadedData % Array of loaded data.
 end
 
@@ -22,24 +23,28 @@ end
 methods (Abstract, Access = protected)
 
 	names = getNames (obj)
+	% Return a cell array of data names.
 
-	loaded = load_from_file (DP, name)
+	loaded = load_from_file (obj, name)
 	% Load from file and return data in struct 'loaded'.
 
-	[X, test_X, Y, test_Y] = process_data (DP, loaded, options)
+	[X, test_X, Y, test_Y] = process_data (obj, loaded, options)
 	% 	loaded - Loaded data struct.
 
 end % END: methods
 
 methods %(Sealed)
 
-function DP = DataProvider (options)
-	% DP.datasetName = datasetName;
-	% if exist('options', 'var'); DP.options = options; else; DP.options = []; end;
+function obj = DataProvider ()
 end
 
 function data = load (DP, name, options)
 % Load data from mat files if has not been loaded.
+%	data - A struct contains data:
+%		X, test_X - Data which could be (cell) array or kernel matrix.
+%		Y, test_Y - Labels which should be (cell) array.
+%		name - Data name as input.
+%		options - Data options as input.
 	data = DP.searchLoadedData(name, options);
 	if isempty(data) % not found data
 		disp(['Load data ''' name ''' from file.']);

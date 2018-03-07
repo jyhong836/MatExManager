@@ -5,7 +5,7 @@ classdef DemoModelProvider < ModelProvider
 
 methods
 
-function MP = DemoModelProvider ()
+function MP = DemoModelProvider (options)
 	InfoSystem.say('Customized model provider.')
 end
 
@@ -36,6 +36,7 @@ end
 
 end
 
+% /////////// Some functions /////////////
 
 function [ W, test_err, train_err ] = svm (data)
 	% process classifier options.

@@ -29,7 +29,7 @@ methods
 
 function EM = ExperimentManager ( dataProvider, modelProvider, options )
 % Initialization
-	%% Process options
+	% Process options
 	if ~exist('options', 'var'); options = []; end;
 	[	EM.jobname,         ...
 		EM.autoSave,        ...
@@ -98,7 +98,7 @@ function run (EM)
 			EM.save2file(); % TODO save to file
 			disp(['---- FIN ' ex.str '@' datestr(datetime('now')) ' ----']);
 		else
-			disp(['WARN: ' ex.str ' has been runned.']);
+			disp(['WARNING: ' ex.str ' has been runned.']);
 		end
 	end
 end

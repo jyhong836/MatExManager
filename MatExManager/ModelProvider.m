@@ -5,7 +5,7 @@ classdef ModelProvider < handle
 % Author: Junyuan Hong, 2018-03-06, jyhong836@gmail.com
 
 properties
-	names
+	names % all data names
 end
 
 % /////////// Abstract methods to be implemented. /////////
