@@ -7,11 +7,12 @@ classdef DataProvider < handle
 properties (GetAccess = public, SetAccess = protected)
     names   % all data names
     % doCache % Cache data to speed up data processing.
+    preprocessor
 end
 
 methods 
-	function dataNames = get.names (obj)
-		dataNames = obj.getNames();
+	function dataNames = get.names (self)
+		dataNames = self.getNames();
 	end
 end
 
@@ -22,20 +23,18 @@ end
 % /////////// Abstract methods to be implemented. /////////
 methods (Abstract, Access = protected)
 
-	names = getNames (obj)
+	names = getNames (self)
 	% Return a cell array of data names.
 
-	loaded = load_from_file (obj, name)
+	loaded = load_from_file (self, name)
 	% Load from file and return data in struct 'loaded'.
-
-	[X, test_X, Y, test_Y] = process_data (obj, loaded, options)
-	% 	loaded - Loaded data struct.
 
 end % END: methods
 
 methods %(Sealed)
 
-function obj = DataProvider ()
+function self = DataProvider (preprocessor, options)
+	self.preprocessor = preprocessor;
 end
 
 function data = load (DP, name, options)
@@ -50,7 +49,8 @@ function data = load (DP, name, options)
 		disp(['Load data ''' name ''' from file.']);
 		if ~exist('options', 'var'); options = []; end;
 		loaded = DP.load_from_file(name);
-		[data.X, data.test_X, data.Y, data.test_Y] = DP.process_data(loaded, options);
+		data = DP.preprocessor(loaded, options);
+		assert(all(isfield(data, {'X', 'test_X', 'Y', 'test_Y'})), 'Preprocessed data missing required fields: X, test_X, Y, test_Y');
 		data.name = name;
 		data.options = options;
 

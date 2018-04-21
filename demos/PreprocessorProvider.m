@@ -1,4 +1,6 @@
 classdef PreprocessorProvider
+% This is a demo for providing preprocessors.
+%
 % Author: Junyuan Hong, 2017-12-05, jyhong836@gmail.com
 
 methods (Static)
@@ -22,6 +24,17 @@ function newdata = kernel_preprocessor (data, options, kernelType)
 		compute_kernel ( ker_fh, data );
 	disp([' cputime: ' num2str(cputime()-start_time)]);
 
+end
+
+function data = data_preprocessor (loaded, options)
+% Process data loaded from files into formatted data.
+%	The loaded data could be variant in fields, etc.
+% 	You can customize the function to adapt your data format.
+%	For example, you can slice the data dimension.
+	data.X      = loaded.training;
+	data.test_X = loaded.testing;
+	data.Y      = loaded.training_label;
+	data.test_Y = loaded.testing_label;
 end
 
 end
