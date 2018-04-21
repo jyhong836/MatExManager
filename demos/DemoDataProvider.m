@@ -20,7 +20,7 @@ function preprocessor = getPreprocessor (self, name, options)
 		case 'aaa'
 			;
 		otherwise
-			InfoSystem.say('Use default preprocessor with cacher.');
+			self.logger.say('Use default preprocessor with cacher.');
 			data_preprocessor = @PreprocessorProvider.data_preprocessor;
 			descrip = options; % Could be more concise when logging.
 			PC = PreprocessCacher();

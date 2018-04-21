@@ -7,6 +7,7 @@ classdef DataProvider < handle
 properties (GetAccess = public, SetAccess = protected)
     names   % all data names
     % doCache % Cache data to speed up data processing.
+    logger
 end
 
 methods 
@@ -36,6 +37,7 @@ end % END: methods
 methods %(Sealed)
 
 function self = DataProvider (options)
+	self.logger = Logger('verbose', 1, 'field', 'DATA');
 end
 
 function data = load (self, name, options)
