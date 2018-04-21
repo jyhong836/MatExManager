@@ -26,6 +26,7 @@ methods (Abstract, Access = protected)
 	% Return a cell array of data names.
 
 	preprocessor = getPreprocessor (self, name)
+	% Return preprocessor according to data name.
 
 	loaded = load_from_file (self, name)
 	% Load from file and return data in struct 'loaded'.
@@ -51,7 +52,7 @@ function data = load (self, name, options)
 		loaded = self.load_from_file(name);
 
 		preprocessor = self.getPreprocessor(name, options);
-		data = self.preprocessor(loaded, options);
+		data = preprocessor(loaded, options);
 
 		assert(all(isfield(data, {'X', 'test_X', 'Y', 'test_Y'})), 'Preprocessed data missing required fields: X, test_X, Y, test_Y');
 		data.name = name;

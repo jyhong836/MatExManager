@@ -24,7 +24,7 @@ end
 
 function newdata = preprocessorWrapper (self, preprocessor, data, options, cacheName, descrip)
 % Wrap preprocessor with cacher.
-	cachefile = self.run ( self, @() preprocessor(data, options), cacheName, descrip );
+	cachefile = self.run ( @() preprocessor(data, options), cacheName, descrip );
 	newdata = load(cachefile);
 end
 

@@ -23,6 +23,7 @@ function preprocessor = getPreprocessor (self, name, options)
 			InfoSystem.say('Use default preprocessor with cacher.');
 			data_preprocessor = @PreprocessorProvider.data_preprocessor;
 			descrip = options; % Could be more concise when logging.
+			PC = PreprocessCacher();
 			preprocessor = @(data, options) PC.preprocessorWrapper(data_preprocessor, data, options, ['cache_' name], descrip); % can ecnode options in cache name.
 	end
 end
