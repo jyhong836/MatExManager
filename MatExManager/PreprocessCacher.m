@@ -14,12 +14,14 @@ classdef PreprocessCacher < handle
 
 properties
 	updateCache % 0: not update cache; -1: force updating ??; <=-2: updating all cache.
+	logger
 end
 
 methods
 
 function self = PreprocessCacher (options)
 	self.updateCache = 0;
+	self.logger = Logger('verbose', 1, 'field', 'CACHE');
 end
 
 function newdata = preprocessorWrapper (self, preprocessor, data, options, cacheName, descrip)
@@ -42,12 +44,12 @@ function cachefile = run ( self, getCacheData, cacheName, descrip )
 	doCache = ~foundCache;
 
 	if self.updateCache<=-2
-		InfoSystem.say('[CACHE] Force updating cache.');
+		self.logger.say('Force updating cache.');
 		doCache = true;
 	end
 
 	if doCache
-		InfoSystem.say('Caching...');
+		self.logger.say('Caching...');
 		data = getCacheData();
 		X      = data.X;
 		test_X = data.test_X;
@@ -58,7 +60,7 @@ function cachefile = run ( self, getCacheData, cacheName, descrip )
 		descrip.arch = computer('arch');
 
 		save(cachefile, 'X', 'Y', 'test_X', 'test_Y', 'descrip');
-		InfoSystem.say(['[CACHE] Saved to ' cachefile]);
+		self.logger.say(['Saved to ' cachefile]);
 	end
 end
 
@@ -73,7 +75,7 @@ function [cachefile, foundCache] = check_cache(cacheName)
 
 	cachefile = fullfile(CACHE_DIR, cacheName);
 	if exist(cachefile, 'file')
-		InfoSystem.say(['[CACHE] Found cachefile: ' cachefile]);
+		self.logger.say(['Found cachefile: ' cachefile]);
 		foundCache = true;
 	else
 	end
