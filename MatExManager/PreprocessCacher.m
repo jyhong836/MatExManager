@@ -3,6 +3,12 @@ classdef PreprocessCacher < handle
 %	The caching relies on the preprocessor.
 %
 % Example:
+%	PC = PreprocessCacher();
+%	cahceName = 'aaa';
+%	descrip.d = 1;
+%	preprocessor = @(data, options) PC.preprocessorWrapper(realPreprocessor, data, options, cacheName, descrip);
+%
+% See also: DemoDataProvider
 %
 % Author: Junyuan Hong, 2017-04-07, jyhong836@gmail.com
 
@@ -13,38 +19,46 @@ end
 methods
 
 function self = PreprocessCacher (options)
-	updateCache = 0;
+	self.updateCache = 0;
 end
 
-function cachefile = doCache ( cacheData, cacheName, descrip )
+function newdata = preprocessorWrapper (self, preprocessor, data, options, cacheName, descrip)
+% Wrap preprocessor with cacher.
+	cachefile = self.run ( self, @() preprocessor(data, options), cacheName, descrip );
+	newdata = load(cachefile);
+end
+
+function cachefile = run ( self, getCacheData, cacheName, descrip )
 % INPUT:
-% 	cacheData - A function yields data to be cached.
-%		[ X, test_X, Y, test_Y ] = cacheData();
+% 	getCacheData - A function yields data to be cached.
+%		[ X, test_X, Y, test_Y ] = getCacheData();
 %	cacheName - Cache name
 %	descrip - Description will be saved in cache.
-
-	if ~exist('updateCache', 'var') || isempty(updateCache)
-		updateCache = 0;
-	end
+% OUTPUT:
+%	cachefile - Cache file name.
 
 	[cachefile, foundCache] = check_cache(cacheName);
 
 	doCache = ~foundCache;
 
-	if updateCache<=-2
-		disp('[CACHE] Force updating cache.');
+	if self.updateCache<=-2
+		InfoSystem.say('[CACHE] Force updating cache.');
 		doCache = true;
 	end
 
 	if doCache
-		disp('Caching...');
-		[ X, test_X, Y, test_Y ] = cacheData();
+		InfoSystem.say('Caching...');
+		data = getCacheData();
+		X      = data.X;
+		test_X = data.test_X;
+		Y      = data.Y;
+		test_Y = data.test_Y;
 
 		descrip.date = datetime('now');
 		descrip.arch = computer('arch');
 
 		save(cachefile, 'X', 'Y', 'test_X', 'test_Y', 'descrip');
-		disp(['[CACHE] Saved to ' cachefile]);
+		InfoSystem.say(['[CACHE] Saved to ' cachefile]);
 	end
 end
 
@@ -59,7 +73,7 @@ function [cachefile, foundCache] = check_cache(cacheName)
 
 	cachefile = fullfile(CACHE_DIR, cacheName);
 	if exist(cachefile, 'file')
-		disp(['[CACHE] Found cachefile: ' cachefile]);
+		InfoSystem.say(['[CACHE] Found cachefile: ' cachefile]);
 		foundCache = true;
 	else
 	end

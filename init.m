@@ -6,6 +6,7 @@
 % Add path: elements of MatExManager
 addpath(genpath('./MatExManager/'));
 
-global DATA_DIR TEMP_DIR
+global DATA_DIR TEMP_DIR CACHE_DIR
 TEMP_DIR = './demos/temp/'; % Store output or other temp files.
 DATA_DIR = './demos/temp/'; % Store data.
+CACHE_DIR = fullfile(TEMP_DIR, 'cache'); % For caching files.

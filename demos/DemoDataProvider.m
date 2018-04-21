@@ -5,8 +5,7 @@ classdef DemoDataProvider < DataProvider
 
 methods
 function self = DemoDataProvider (options)
-	preprocessor = @PreprocessorProvider.data_preprocessor;
-	self@DataProvider(preprocessor, options);
+	self@DataProvider(options);
 end
 end
 
@@ -14,6 +13,18 @@ methods (Access = protected)
 
 function names = getNames (self)
 	names = {'PreWine'};
+end
+
+function preprocessor = getPreprocessor (self, name, options)
+	switch name
+		case 'aaa'
+			;
+		otherwise
+			InfoSystem.say('Use default preprocessor with cacher.');
+			data_preprocessor = @PreprocessorProvider.data_preprocessor;
+			descrip = options; % Could be more concise when logging.
+			preprocessor = @(data, options) PC.preprocessorWrapper(data_preprocessor, data, options, ['cache_' name], descrip); % can ecnode options in cache name.
+	end
 end
 
 function loaded = load_from_file (self, dataname)
